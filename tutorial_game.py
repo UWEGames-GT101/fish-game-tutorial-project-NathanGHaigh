@@ -62,28 +62,81 @@ class MyASGEGame(pyasge.ASGEGame):
             return False
 
     def initFish(self) -> bool:
-        pass
+        if self.fish.loadTexture("/data/images/kenney_fishpack/fishTile_073.png"):
+            self.fish.z_order = 1
+            self.fish.scale = 1
+            self.fish.x = 300
+            self.fish.y = 300
+            return True
+
+        return False
 
     def initScoreboard(self) -> None:
         pass
 
     def initMenu(self) -> bool:
-        pass
+        #Title of the game
+        self.data.fonts["MainFont"] = self.data.renderer.loadFont("/data/fonts/KGHAPPY.ttf", 64)
+        self.menu_text = pyasge.Text(self.data.fonts["MainFont"])
+        self.menu_text.string = "I cooka de Fisch Game"
+        self.menu_text.position = [100, 100]
+        self.menu_text.colour = pyasge.COLOURS.HOTPINK
+
+        #Start button
+        self.play_option = pyasge.Text(self.data.fonts["MainFont"])
+        self.play_option.string = ">START"
+        self.play_option.position = [100, 400]
+        self.play_option.colour = pyasge.COLOURS.HOTPINK
+
+        #End Game Button
+        self.exit_option = pyasge.Text(self.data.fonts["MainFont"])
+        self.exit_option.string = "EXIT"
+        self.exit_option.position = [500, 400]
+        self.exit_option.colour = pyasge.COLOURS.RED
+
+        return True
 
     def clickHandler(self, event: pyasge.ClickEvent) -> None:
         pass
 
     def keyHandler(self, event: pyasge.KeyEvent) -> None:
-        pass
+        # only act when the key is pressed and not released
+        if event.action == pyasge.KEYS.KEY_PRESSED:
 
+        # Change between the start and end using the arrows
+
+            if event.key == pyasge.KEYS.KEY_RIGHT or event.key == pyasge.KEYS.KEY_LEFT:
+                self.menu_option = 1 - self.menu_option
+                if self.menu_option == 0:
+                   self.play_option.string = ">START"
+                   self.play_option.colour = pyasge.COLOURS.HOTPINK
+                   self.exit_option.string = " EXIT"
+                   self.exit_option.colour = pyasge.COLOURS.RED
+                else:
+                    self.play_option.string = "START"
+                    self.play_option.colour = pyasge.COLOURS.RED
+                    self.exit_option.string = " >EXIT"
+                    self.exit_option.colour = pyasge.COLOURS.HOTPINK
+            # When the enter button is pressed it loads the appropriate menu option
+            if event.key == pyasge.KEYS.KEY_ENTER:
+                if self.menu_option == 0:
+                   self.menu = False
+                else:
+                   self.signalExit()
     def spawn(self) -> None:
-        pass
+        #Create random fish spawn point
+
+        x = random.randint(0, self.data.game_res[0] - self.fish.width)
+        y = random.randint(0, self.data.game_res[1] - self.fish.height)
+
+        self.fish.x = x
+        self.fish.y = y
+        
 
     def update(self, game_time: pyasge.GameTime) -> None:
 
-        if self.menu:
-            # update the menu here
-            pass
+        if self.menu == False:
+           self.data.renderer.render(self.data.background)
         else:
             # update the game here
             pass
@@ -99,10 +152,14 @@ class MyASGEGame(pyasge.ASGEGame):
         if self.menu:
             # render the menu here
             self.data.renderer.render(self.data.background)
+            self.data.renderer.render(self.menu_text)
+
+            self.data.renderer.render(self.play_option)
+            self.data.renderer.render(self.exit_option)
             pass
         else:
             # render the game here
-            pass
+            self.data.renderer.render(self.fish)
 
 
 def main():
